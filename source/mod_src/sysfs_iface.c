@@ -94,7 +94,8 @@ static ssize_t battery_volts_show(struct kobject *kobj, struct kobj_attribute *a
 	}
 
 	// Calculate voltage in fixed point
-	volts_fp *= 330 * 2;
+	volts_fp *= 330 * 214;
+        volts_fp /= 100;
 	volts_fp /= 4095;
 
 	// Format into buffer
@@ -115,11 +116,21 @@ static ssize_t battery_percent_show(struct kobject *kobj, struct kobj_attribute 
 	}
 
 	// Calculate voltage in fixed point
-	percent *= 330 * 2;
+	percent *= 330 * 214;
+        percent /= 100;
 	percent /= 4095;
 
 	// Range from 3.2V min to 4.2V max
 	percent -= 320;
+
+        // there shall be no percentage above 100 or below 0
+        if (percent > 100){
+          percent = 100;
+        }
+
+        if (percent < 0){
+          percent = 0;
+        }
 
 	// Format into buffer
 	return sprintf(buf, "%d", percent);
